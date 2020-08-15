@@ -1,8 +1,8 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';
 
 import '../Utils.dart';
@@ -29,6 +29,7 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
     _controller = CameraController(
       widget.camera,
       ResolutionPreset.medium,
+      enableAudio: false,
     );
     _initializeControllerFuture = _controller.initialize();
   }
@@ -46,6 +47,7 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
     final deviceRatio = size.width / size.height;
 
     return Scaffold(
+      key: _scaffoldKey,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(title: Text('Take a selfie video')),
       body: FutureBuilder<void>(
@@ -109,10 +111,14 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
   Future<String> startVideoRecording() async {
     if (!_controller.value.isInitialized) return null;
 
-    final Directory extDir = await getApplicationDocumentsDirectory();
-    final String dirPath = '${extDir.path}/Face Matching/flutter_test';
-    await Directory(dirPath).create(recursive: true);
-    final String filePath = '$dirPath/${timestamp()}.mp4';
+    // Construct the path where the image should be saved using the
+    // pattern package.
+    String formattedDate = DateFormat('dd-MM-yyyy – kk:mm:ss').format(DateTime.now());
+    final filePath = Path.join(
+      // Store the picture in the storage/emulated/ directory.
+      // Find the temp directory using the `path_provider` plugin.
+      (await getExternalStorageDirectory()).path, '$formattedDate.mp4',
+    );
 
     if (_controller.value.isRecordingVideo) return null;
 
@@ -120,6 +126,7 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
       videoPath = filePath;
       await _controller.startVideoRecording(filePath);
     } on CameraException catch (e) {
+      print(e.description);
       showInSnackBar('Error: ${e.code}\n${e.description}');
       return null;
     }

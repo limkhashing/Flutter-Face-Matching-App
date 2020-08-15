@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_face_matching_app/example/CameraExampleHome.dart';
+import 'package:flutter_face_matching_app/network/FaceMatching.dart';
 import 'package:flutter_face_matching_app/screens/widgets/ImageVideoRowPreviewWidget.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:video_player/video_player.dart';
 import 'file:///D:/Flutter-Projects/flutter_face_matching_app/lib/screens/TakePictureScreen.dart';
 import 'file:///D:/Flutter-Projects/flutter_face_matching_app/lib/screens/TakeVideoScreen.dart';
@@ -41,6 +42,7 @@ class FaceMatchingApp extends StatefulWidget {
 class _FaceMatchingAppState extends State<FaceMatchingApp> {
   Map data = {};
   VideoPlayerController videoController;
+  FToast flutterToast;
 
   Future<void> _startVideoPlayer(String videoPath) async {
     final VideoPlayerController videoPlayerController =
@@ -52,6 +54,12 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
       });
     }
     await videoPlayerController.play();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    flutterToast = FToast(context);
   }
 
   @override
@@ -96,6 +104,9 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                       data[argsImagePath] == null
                           ? data.addAll(result)
                           : data[argsImagePath] = result[argsImagePath];
+//                      ImageGallerySaver.saveImage(
+////                          Uint8List.fromList(response.data), ,
+//                          result[argsImagePath]);
                     }
 
                     setState(() {});
@@ -132,8 +143,16 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                 ),
                 SizedBox(height: 10.0),
                 RaisedButton(
-                  onPressed: () {
-                    // TODO show a blur background and spinkit, call api and show dialog result
+                  onPressed: () async {
+                    // TODO show a blur background and spinkit
+                    if (data[argsImagePath] != null &&
+                        data[argsVideoPath] != null) {
+                      FaceMatching faceMatching = FaceMatching(
+                          data[argsImagePath], data[argsVideoPath]);
+                      await faceMatching.compareFace();
+                    } else {
+                      showToast(flutterToast);
+                    }
                   },
                   child: Text('Submit for face matching',
                       style: TextStyle(fontSize: 16)),
@@ -146,13 +165,11 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
             margin: const EdgeInsets.all(15.0),
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 2.0),
-              borderRadius: BorderRadius.all(
-                  Radius.circular(6.0)
-              ),
+              border: Border.all(color: Colors.black, width: 2.0),
+              borderRadius: BorderRadius.all(Radius.circular(6.0)),
             ),
             // TODO show json result from api
-            child:  Text("JSON result will show here"),
+            child: Text("JSON result will show here"),
           )
         ],
       ),

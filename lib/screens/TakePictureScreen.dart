@@ -1,7 +1,11 @@
 // A screen that allows users to take a picture using a given camera.
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';
 
@@ -92,11 +96,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
               // Construct the path where the image should be saved using the
               // pattern package.
+              String formattedDate = DateFormat('dd-MM-yyyy – kk:mm:ss').format(DateTime.now());
               final path = Path.join(
-                // Store the picture in the temp directory.
+                // Store the picture in the storage/emulated/ directory.
                 // Find the temp directory using the `path_provider` plugin.
-                (await getTemporaryDirectory()).path,
-                '${DateTime.now()}.png',
+                (await getExternalStorageDirectory()).path, '$formattedDate.png',
               );
 
               // Attempt to take a picture and log where it's been saved.
