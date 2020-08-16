@@ -28,7 +28,7 @@ class _TakeVideoScreenState extends State<TakeVideoScreen> {
     super.initState();
     _controller = CameraController(
       widget.camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
       enableAudio: false,
     );
     _initializeControllerFuture = _controller.initialize();

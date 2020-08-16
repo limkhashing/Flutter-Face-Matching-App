@@ -56,7 +56,7 @@ class ImageVideoRowPreviewWidget extends StatelessWidget {
   Widget videoPreviewWidget() {
     if (data[argsVideoPath] == null) {
       return const Center(
-        child: Text('Image will show here',
+        child: Text('Video will show here',
             style: TextStyle(
               color: Colors.white,
               fontSize: 17.0,

@@ -32,13 +32,21 @@ dependencies:
   audioplayers: ^0.15.1
   fluttertoast: ^7.0.2
   dio: 3.0.10
-  image_picker: ^0.6.7+4 # for example usage
+  image_picker: ^0.6.7+4
   intl: ^0.16.1
   json_annotation: ^3.0.0
 
 dev_dependencies:
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
+  flutter_launcher_icons: ^0.7.5
+
+# https://github.com/fluttercommunity/flutter_launcher_icons
+# flutter pub run flutter_launcher_icons:main to generate icons for android and ios
+flutter_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

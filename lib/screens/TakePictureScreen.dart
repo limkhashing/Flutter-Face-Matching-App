@@ -30,7 +30,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -97,7 +97,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
               final path = Path.join(
                 // Store the picture in the storage/emulated/ directory.
                 // Find the temp directory using the `path_provider` plugin.
-                (await getExternalStorageDirectory()).path, '$formattedDate.png',
+                (await getExternalStorageDirectory()).path, '$formattedDate.jpg',
               );
 
               // Attempt to take a picture and log where it's been saved.

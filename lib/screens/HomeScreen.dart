@@ -5,11 +5,11 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_face_matching_app/models/FaceMatchingResponse.dart';
 import 'package:flutter_face_matching_app/network/FaceMatching.dart';
+import 'package:flutter_face_matching_app/screens/TakePictureScreen.dart';
+import 'package:flutter_face_matching_app/screens/TakeVideoScreen.dart';
 import 'package:flutter_face_matching_app/screens/widgets/ImageVideoRowPreviewWidget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:video_player/video_player.dart';
-import 'file:///D:/Flutter-Projects/flutter_face_matching_app/lib/screens/TakePictureScreen.dart';
-import 'file:///D:/Flutter-Projects/flutter_face_matching_app/lib/screens/TakeVideoScreen.dart';
 import '../Utils.dart';
 
 List<CameraDescription> cameras = [];
@@ -92,6 +92,7 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                     style: TextStyle(fontSize: 16),
                   ),
                   onPressed: () async {
+                    // TODO use image picker, camera plugin quality too poor
                     dynamic result = await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -102,14 +103,9 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                     );
 
                     if (result != null) {
-                      // if data[argsImagePath is null, we add it
-                      // else, we replace it
                       data[argsImagePath] == null
                           ? data.addAll(result)
                           : data[argsImagePath] = result[argsImagePath];
-//                      ImageGallerySaver.saveImage(
-////                          Uint8List.fromList(response.data), ,
-//                          result[argsImagePath]);
                     }
 
                     setState(() {});
@@ -122,6 +118,7 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                     style: TextStyle(fontSize: 16),
                   ),
                   onPressed: () async {
+                    // TODO use image picker, camera plugin quality too poor
                     dynamic result = await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -151,19 +148,14 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                     onPressed: () async {
 //                    CircularProgressIndicator()
                       // TODO show a blur background and spinkit
-                      // TODO show a dialog when gotten result
                       if (data[argsImagePath] != null &&
                           data[argsVideoPath] != null) {
-                        FaceMatchingAPI faceMatching = FaceMatchingAPI(
-                            data[argsImagePath], data[argsVideoPath]);
-                        FaceMatchingResponse response =
-                            await faceMatching.compareFace();
-                        this.response = response;
+                        await callFaceMatchingApi();
+                        await showFaceMatchingResultDialog();
 
                         setState(() {});
-                      } else {
+                      } else
                         showToast(flutterToast);
-                      }
                     }),
               ],
             ),
@@ -190,8 +182,48 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
       return getPrettyJSONString(response.toJson());
   }
 
-  String getPrettyJSONString(jsonObject){
+  String getPrettyJSONString(jsonObject) {
     var encoder = new JsonEncoder.withIndent("     ");
     return encoder.convert(jsonObject);
+  }
+
+  Future<void> showFaceMatchingResultDialog() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: true, // by default is true
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: <Widget>[
+              Icon(
+                response.isMatch != null
+                    ? response.isMatch ? Icons.check : Icons.close
+                    : Icons.help_outline,
+                size: 26,
+                color: response.isMatch != null
+                    ? response.isMatch ? Colors.green : Colors.red
+                    : Colors.black,
+              ),
+              SizedBox(width: 10.0),
+              Text('Face Matching Result'),
+            ],
+          ),
+          content: Text(
+            response.isMatch != null
+                ? response.isMatch
+                    ? "Your face is matched"
+                    : "Your face is not match"
+                : "No face found in either image or video",
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> callFaceMatchingApi() async {
+    FaceMatchingAPI faceMatching =
+        FaceMatchingAPI(data[argsImagePath], data[argsVideoPath]);
+    FaceMatchingResponse response = await faceMatching.compareFace();
+    this.response = response;
   }
 }
