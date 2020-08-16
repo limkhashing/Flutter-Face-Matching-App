@@ -34,6 +34,11 @@ dependencies:
   dio: 3.0.10
   image_picker: ^0.6.7+4 # for example usage
   intl: ^0.16.1
+  json_annotation: ^3.0.0
+
+dev_dependencies:
+  build_runner: ^1.0.0
+  json_serializable: ^3.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

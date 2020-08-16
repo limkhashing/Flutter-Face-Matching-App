@@ -1,10 +1,7 @@
 // A screen that allows users to take a picture using a given camera.
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';

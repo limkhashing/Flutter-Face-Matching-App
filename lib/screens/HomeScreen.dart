@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_face_matching_app/models/FaceMatchingResponse.dart';
 import 'package:flutter_face_matching_app/network/FaceMatching.dart';
 import 'package:flutter_face_matching_app/screens/widgets/ImageVideoRowPreviewWidget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,6 +43,7 @@ class FaceMatchingApp extends StatefulWidget {
 
 class _FaceMatchingAppState extends State<FaceMatchingApp> {
   Map data = {};
+  FaceMatchingResponse response;
   VideoPlayerController videoController;
   FToast flutterToast;
 
@@ -143,20 +146,25 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                 ),
                 SizedBox(height: 10.0),
                 RaisedButton(
-                  onPressed: () async {
-                    // TODO show a blur background and spinkit
-                    if (data[argsImagePath] != null &&
-                        data[argsVideoPath] != null) {
-                      FaceMatching faceMatching = FaceMatching(
-                          data[argsImagePath], data[argsVideoPath]);
-                      await faceMatching.compareFace();
-                    } else {
-                      showToast(flutterToast);
-                    }
-                  },
-                  child: Text('Submit for face matching',
-                      style: TextStyle(fontSize: 16)),
-                ),
+                    child: Text('Submit for face matching',
+                        style: TextStyle(fontSize: 16)),
+                    onPressed: () async {
+//                    CircularProgressIndicator()
+                      // TODO show a blur background and spinkit
+                      // TODO show a dialog when gotten result
+                      if (data[argsImagePath] != null &&
+                          data[argsVideoPath] != null) {
+                        FaceMatchingAPI faceMatching = FaceMatchingAPI(
+                            data[argsImagePath], data[argsVideoPath]);
+                        FaceMatchingResponse response =
+                            await faceMatching.compareFace();
+                        this.response = response;
+
+                        setState(() {});
+                      } else {
+                        showToast(flutterToast);
+                      }
+                    }),
               ],
             ),
           ),
@@ -168,11 +176,22 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
               border: Border.all(color: Colors.black, width: 2.0),
               borderRadius: BorderRadius.all(Radius.circular(6.0)),
             ),
-            // TODO show json result from api
-            child: Text("JSON result will show here"),
+            child: Text(getFaceMatchingApiResponse()),
           )
         ],
       ),
     );
+  }
+
+  String getFaceMatchingApiResponse() {
+    if (response == null)
+      return "JSON result will show here";
+    else
+      return getPrettyJSONString(response.toJson());
+  }
+
+  String getPrettyJSONString(jsonObject){
+    var encoder = new JsonEncoder.withIndent("     ");
+    return encoder.convert(jsonObject);
   }
 }
