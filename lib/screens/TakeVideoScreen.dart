@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';
 
-import '../Utils.dart';
+import '../utils/Utils.dart';
 import 'DisplayPictureScreen.dart';
 
 class TakeVideoScreen extends StatefulWidget {

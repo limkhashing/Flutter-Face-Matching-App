@@ -1,17 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_face_matching_app/models/FaceMatchingResponse.dart';
 import 'package:flutter_face_matching_app/network/FaceMatching.dart';
-import 'package:flutter_face_matching_app/screens/TakePictureScreen.dart';
-import 'package:flutter_face_matching_app/screens/TakeVideoScreen.dart';
 import 'package:flutter_face_matching_app/screens/widgets/ImageVideoRowPreviewWidget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
-import '../Utils.dart';
+import '../utils/Utils.dart';
 
 List<CameraDescription> cameras = [];
 final String argsImagePath = "IMAGE_PATH";
@@ -106,7 +103,6 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                           data[argsImagePath] = pickedFile.path;
                         else
                           data[argsImagePath] = data[argsImagePath];
-
                       } catch (e) {
                         showToast(flutterToast, e.runtimeType.toString());
                       }
@@ -140,10 +136,8 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                         if (pickedFile != null) {
                           data[argsVideoPath] = pickedFile.path;
                           await _startVideoPlayer(pickedFile.path);
-                        }
-                        else
+                        } else
                           data[argsVideoPath] = data[argsVideoPath];
-
                       } catch (e) {
                         showToast(flutterToast, e.runtimeType.toString());
                       }
@@ -166,11 +160,11 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                       child: Text('Submit for face matching',
                           style: TextStyle(fontSize: 16)),
                       onPressed: () async {
-//                    CircularProgressIndicator()
-                        // TODO show a blur background and spinkit
                         if (data[argsImagePath] != null &&
                             data[argsVideoPath] != null) {
-                          await callFaceMatchingApi();
+                          showLoaderDialog(context);
+                          await callFaceMatchingApi()
+                              .then((value) => Navigator.pop(context));
                           await showFaceMatchingResultDialog();
 
                           setState(() {});
@@ -202,11 +196,6 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
       return "JSON result will show here";
     else
       return getPrettyJSONString(response.toJson());
-  }
-
-  String getPrettyJSONString(jsonObject) {
-    var encoder = new JsonEncoder.withIndent("     ");
-    return encoder.convert(jsonObject);
   }
 
   Future<void> showFaceMatchingResultDialog() async {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
@@ -7,7 +9,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
 
-CameraDescription getCameraLensDirection(CameraLensDirection direction, List<CameraDescription> cameras) {
+CameraDescription getCameraLensDirection(
+    CameraLensDirection direction, List<CameraDescription> cameras) {
   switch (direction) {
     case CameraLensDirection.back:
       return cameras.first;
@@ -50,5 +53,28 @@ void showToast(flutterToast, msg) {
   );
 }
 
+void showLoaderDialog(BuildContext context) {
+  AlertDialog alert = AlertDialog(
+    content: new Row(
+      children: [
+        CircularProgressIndicator(),
+        SizedBox(
+          width: 20.0,
+        ),
+        Text("Comparing face..."),
+      ],
+    ),
+  );
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
 
-
+String getPrettyJSONString(jsonObject) {
+  var encoder = new JsonEncoder.withIndent("     ");
+  return encoder.convert(jsonObject);
+}
