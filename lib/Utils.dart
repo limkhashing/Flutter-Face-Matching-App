@@ -24,7 +24,7 @@ Future<AudioPlayer> playShutterSound(String fileName) async {
   return await cache.play(fileName);
 }
 
-void showToast(flutterToast) {
+void showToast(flutterToast, msg) {
   Widget toast = Container(
     padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
     decoration: BoxDecoration(
@@ -38,7 +38,7 @@ void showToast(flutterToast) {
         SizedBox(
           width: 12.0,
         ),
-        Expanded(child: Text("Please ensure you taken photo and selfie video")),
+        Expanded(child: Text(msg)),
       ],
     ),
   );

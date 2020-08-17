@@ -9,6 +9,7 @@ import 'package:flutter_face_matching_app/screens/TakePictureScreen.dart';
 import 'package:flutter_face_matching_app/screens/TakeVideoScreen.dart';
 import 'package:flutter_face_matching_app/screens/widgets/ImageVideoRowPreviewWidget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import '../Utils.dart';
 
@@ -46,6 +47,7 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
   FaceMatchingResponse response;
   VideoPlayerController videoController;
   FToast flutterToast;
+  final ImagePicker _picker = ImagePicker();
 
   Future<void> _startVideoPlayer(String videoPath) async {
     final VideoPlayerController videoPlayerController =
@@ -77,100 +79,120 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Column(
-        children: <Widget>[
-          SizedBox(height: 20.0),
-          ImageVideoRowPreviewWidget(data, videoController),
-          SizedBox(height: 20.0),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  child: Text(
-                    'Take an identity picture',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  onPressed: () async {
-                    // TODO use image picker, camera plugin quality too poor
-                    dynamic result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TakePictureScreen(
-                            getCameraLensDirection(
-                                CameraLensDirection.back, cameras)),
-                      ),
-                    );
-
-                    if (result != null) {
-                      data[argsImagePath] == null
-                          ? data.addAll(result)
-                          : data[argsImagePath] = result[argsImagePath];
-                    }
-
-                    setState(() {});
-                  },
-                ),
-                SizedBox(height: 10.0),
-                RaisedButton(
-                  child: Text(
-                    'Take a selfie video',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  onPressed: () async {
-                    // TODO use image picker, camera plugin quality too poor
-                    dynamic result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TakeVideoScreen(
-                          getCameraLensDirection(
-                              CameraLensDirection.front, cameras),
-                        ),
-                      ),
-                    );
-
-                    if (result != null) {
-                      // if data[argsVideoPath is null, we add it
-                      // else, we replace it
-                      data[argsVideoPath] == null
-                          ? data.addAll(result)
-                          : data[argsVideoPath] = result[argsVideoPath];
-                      await _startVideoPlayer(result[argsVideoPath]);
-                    }
-
-                    setState(() {});
-                  },
-                ),
-                SizedBox(height: 10.0),
-                RaisedButton(
-                    child: Text('Submit for face matching',
-                        style: TextStyle(fontSize: 16)),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: 20.0),
+            ImageVideoRowPreviewWidget(data, videoController),
+            SizedBox(height: 20.0),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    child: Text(
+                      'Take an identity picture',
+                      style: TextStyle(fontSize: 16),
+                    ),
                     onPressed: () async {
-//                    CircularProgressIndicator()
-                      // TODO show a blur background and spinkit
-                      if (data[argsImagePath] != null &&
-                          data[argsVideoPath] != null) {
-                        await callFaceMatchingApi();
-                        await showFaceMatchingResultDialog();
+                      // https://github.com/flutter/flutter/issues/55644
+                      try {
+                        final pickedFile = await _picker.getImage(
+                          preferredCameraDevice: CameraDevice.front,
+                          source: ImageSource.camera,
+                        );
 
-                        setState(() {});
-                      } else
-                        showToast(flutterToast);
-                    }),
-              ],
+                        if (pickedFile != null)
+                          data[argsImagePath] = pickedFile.path;
+                        else
+                          data[argsImagePath] = data[argsImagePath];
+
+                      } catch (e) {
+                        showToast(flutterToast, e.runtimeType.toString());
+                      }
+                      setState(() {});
+
+                      /// Use Camera plugin to take photo
+//                    dynamic result = await Navigator.push(
+//                      context,
+//                      MaterialPageRoute(
+//                        builder: (context) => TakePictureScreen(
+//                            getCameraLensDirection(
+//                                CameraLensDirection.back, cameras)),
+//                      ),
+//                    );
+                    },
+                  ),
+                  SizedBox(height: 10.0),
+                  RaisedButton(
+                    child: Text(
+                      'Take a selfie video',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    onPressed: () async {
+                      // https://github.com/flutter/flutter/issues/55644
+                      try {
+                        final pickedFile = await _picker.getVideo(
+                            source: ImageSource.camera,
+                            preferredCameraDevice: CameraDevice.front,
+                            maxDuration: const Duration(seconds: 5));
+
+                        if (pickedFile != null) {
+                          data[argsVideoPath] = pickedFile.path;
+                          await _startVideoPlayer(pickedFile.path);
+                        }
+                        else
+                          data[argsVideoPath] = data[argsVideoPath];
+
+                      } catch (e) {
+                        showToast(flutterToast, e.runtimeType.toString());
+                      }
+                      setState(() {});
+
+                      /// Use Camera plugin to record video
+//                    dynamic result = await Navigator.push(
+//                      context,
+//                      MaterialPageRoute(
+//                        builder: (context) => TakeVideoScreen(
+//                          getCameraLensDirection(
+//                              CameraLensDirection.front, cameras),
+//                        ),
+//                      ),
+//                    );
+                    },
+                  ),
+                  SizedBox(height: 10.0),
+                  RaisedButton(
+                      child: Text('Submit for face matching',
+                          style: TextStyle(fontSize: 16)),
+                      onPressed: () async {
+//                    CircularProgressIndicator()
+                        // TODO show a blur background and spinkit
+                        if (data[argsImagePath] != null &&
+                            data[argsVideoPath] != null) {
+                          await callFaceMatchingApi();
+                          await showFaceMatchingResultDialog();
+
+                          setState(() {});
+                        } else
+                          showToast(flutterToast,
+                              "Please ensure you taken photo and selfie video");
+                      }),
+                ],
+              ),
             ),
-          ),
-          SizedBox(height: 30.0),
-          Container(
-            margin: const EdgeInsets.all(15.0),
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 2.0),
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-            ),
-            child: Text(getFaceMatchingApiResponse()),
-          )
-        ],
+            SizedBox(height: 30.0),
+            Container(
+              margin: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2.0),
+                borderRadius: BorderRadius.all(Radius.circular(6.0)),
+              ),
+              child: Text(getFaceMatchingApiResponse()),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -28,7 +28,7 @@ class ImageVideoRowPreviewWidget extends StatelessWidget {
           child: videoPreviewWidget(),
           color: Colors.black,
           height: 200.0,
-          width: 150.0,
+          width: 130.0,
         ),
       ],
     );
