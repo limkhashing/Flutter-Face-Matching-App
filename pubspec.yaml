@@ -44,7 +44,7 @@ dev_dependencies:
 # https://github.com/fluttercommunity/flutter_launcher_icons
 # flutter pub run flutter_launcher_icons:main to generate icons for android and ios
 flutter_icons:
-  image_path: "assets/icon/icon.png"
+  image_path: "assets/icon/icon.jpg"
   android: true
   ios: true
 
