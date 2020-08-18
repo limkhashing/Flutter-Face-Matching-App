@@ -28,7 +28,7 @@
 	<string>Main</string>
 	<key>NSCameraUsageDescription</key>
     <string>To take picture of identity card and selfie video</string>
-    <key>NSCameraUsageDescription  <key>
+    <key>NSCameraUsageDescription<key>
     <string>To take picture of identity card photo</string>
     <key>NSMicrophoneUsageDescription  <key>
     <string>To record selfie video/string>
