@@ -6,6 +6,7 @@ import 'endpoint.dart';
 class FaceMatchingAPI {
   String imagePath;
   String videoPath;
+  Dio dio = Dio();
 
   FaceMatchingAPI(this.imagePath, this.videoPath);
 
@@ -21,7 +22,7 @@ class FaceMatchingAPI {
       });
 
       Response dioResponse =
-          await Dio().post(FACE_MATCHING_URL, data: formData);
+          await dio.post(FACE_MATCHING_URL, data: formData).timeout(Duration(seconds: 1000));
 //      print(dioResponse.toString()); // dioResponse.data returns a map object
 
       Map compareResultMap = jsonDecode(dioResponse.toString());

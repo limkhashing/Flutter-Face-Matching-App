@@ -165,8 +165,7 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
                           showLoaderDialog(context);
                           await callFaceMatchingApi()
                               .then((value) => Navigator.pop(context));
-                          await showFaceMatchingResultDialog();
-
+                          await showFaceMatchingResultDialog(context, response);
                           setState(() {});
                         } else
                           showToast(flutterToast,
@@ -196,39 +195,6 @@ class _FaceMatchingAppState extends State<FaceMatchingApp> {
       return "JSON result will show here";
     else
       return getPrettyJSONString(response.toJson());
-  }
-
-  Future<void> showFaceMatchingResultDialog() async {
-    await showDialog(
-      context: context,
-      barrierDismissible: true, // by default is true
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: <Widget>[
-              Icon(
-                response.isMatch != null
-                    ? response.isMatch ? Icons.check : Icons.close
-                    : Icons.help_outline,
-                size: 26,
-                color: response.isMatch != null
-                    ? response.isMatch ? Colors.green : Colors.red
-                    : Colors.black,
-              ),
-              SizedBox(width: 10.0),
-              Text('Face Matching Result'),
-            ],
-          ),
-          content: Text(
-            response.isMatch != null
-                ? response.isMatch
-                    ? "Your face is matched"
-                    : "Your face is not match"
-                : "No face found in either image or video",
-          ),
-        );
-      },
-    );
   }
 
   Future<void> callFaceMatchingApi() async {

@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_face_matching_app/models/FaceMatchingResponse.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
@@ -70,6 +71,46 @@ void showLoaderDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return alert;
+    },
+  );
+}
+
+Future<void> showFaceMatchingResultDialog(
+    context, FaceMatchingResponse response) async {
+  await showDialog(
+    context: context,
+    barrierDismissible: true, // by default is true
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Row(
+          children: <Widget>[
+            Icon(
+              response != null
+                  ? response.isMatch != null
+                      ? response.isMatch ? Icons.check : Icons.close
+                      : Icons.help_outline
+                  : Icons.warning,
+              size: 26,
+              color: response != null
+                  ? response.isMatch != null
+                      ? response.isMatch ? Colors.green : Colors.red
+                      : Colors.black
+                  : Colors.black,
+            ),
+            SizedBox(width: 10.0),
+            Text('Face Matching Result'),
+          ],
+        ),
+        content: Text(
+          response != null
+              ? response.isMatch != null
+                  ? response.isMatch
+                      ? "Your face is matched"
+                      : "Your face is not match"
+                  : "No face found in either image or video"
+              : "Face matching API timeout",
+        ),
+      );
     },
   );
 }
