@@ -8,7 +8,7 @@ import 'package:flutter_face_matching_app/screens/widgets/ImageVideoRowPreviewWi
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
-import '../utils/Utils.dart';
+import './utils/Utils.dart';
 
 List<CameraDescription> cameras = [];
 final String argsImagePath = "IMAGE_PATH";

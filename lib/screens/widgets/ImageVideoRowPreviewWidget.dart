@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-import '../HomeScreen.dart';
+import '../../main.dart';
 
 class ImageVideoRowPreviewWidget extends StatelessWidget {
   final Map data;
